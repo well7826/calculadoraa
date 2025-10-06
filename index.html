@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Notas da Faculdade</title>
+    <style>
+        /* Estilos gerais para o corpo da página */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Contêiner principal da calculadora */
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 650px;
+            width: 100%;
+        }
+
+        /* Estilos para títulos e textos */
+        h1, h2, h3 {
+            color: #262730;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2em;
+        }
+        .subtitle {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #555;
+        }
+        .divider {
+            border-top: 1px solid #ddd;
+            margin: 2rem 0;
+        }
+
+        /* Layout e formulários */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label, .radio-title {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        select, input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        .columns {
+            display: grid;
+            gap: 1.5rem;
+        }
+        .two-cols { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+        .three-cols { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .radio-group label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Botão de cálculo */
+        .button-container {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        button {
+            background-color: #ff4b4b;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            width: 70%;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background-color: #e03a3a;
+            transform: scale(1.02);
+        }
+
+        /* Estilos para a área de resultado */
+        .result {
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+            text-align: center;
+            border-left: 5px solid;
+        }
+        .result h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2em;
+        }
+        .result p {
+            margin: 0;
+            font-size: 1.1em;
+        }
+        .success { background-color: #d4edda; border-color: #155724; color: #155724; }
+        .warning { background-color: #fff3cd; border-color: #856404; color: #856404; }
+        .error { background-color: #f8d7da; border-color: #721c24; color: #721c24; }
+
+        /* Classes para esconder/mostrar campos de notas */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🎓 Calculadora UNIP polo PIÚMA</h1>
+        <p class="subtitle">Calcule sua média final para cursos <strong>Tecnólogos</strong>, <strong>Bacharelado</strong> e <strong>Licenciatura</strong>.</p>
+        <div class="divider"></div>
+
+        <form id="calculadoraForm">
+            <h2>1. Selecione seu curso e período</h2>
+            <div class="columns two-cols">
+                <div class="form-group">
+                    <label for="tipo_curso">Qual o tipo do seu curso?</label>
+                    <select id="tipo_curso" name="tipo_curso">
+                        <option value="Tecnólogo">Tecnólogo</option>
+                        <option value="Bacharelado / Licenciatura">Bacharelado / Licenciatura</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <p class="radio-title">Quando você ingressou?</p>
+                    <div class="radio-group">
+                        <label><input type="radio" name="periodo_ingresso" value="Até 2022" checked> Até 2022</label>
+                        <label><input type="radio" name="periodo_ingresso" value="A partir de 2023"> A partir de 2023</label>
+                    </div>
+                </div>
+            </div>
+            <div class="divider"></div>
+
+            <h2>2. Insira suas notas</h2>
+            
+            <div id="notas_tecnologo">
+                <h3>Notas para Tecnólogo</h3>
+                <div class="columns three-cols">
+                    <div class="form-group">
+                        <label for="prova_tec">Prova (0-10)</label>
+                        <input type="number" id="prova_tec" name="prova_tec" min="0" max="10" step="0.1" value="0.0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pim_tec">PIM (0-10)</label>
+                        <input type="number" id="pim_tec" name="pim_tec" min="0" max="10" step="0.1" value="0.0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ava_tec">AVA (0-10)</label>
+                        <input type="number" id="ava_tec" name="ava_tec" min="0" max="10" step="0.1" value="0.0" required>
+                    </div>
+                </div>
+            </div>
+
+            <div id="notas_bacharelado" class="hidden">
+                <h3>Notas para Bacharelado / Licenciatura</h3>
+                <div class="columns two-cols">
+                    <div class="form-group">
+                        <label for="prova_bac">Prova Presencial (0-10)</label>
+                        <input type="number" id="prova_bac" name="prova_bac" min="0" max="10" step="0.1" value="0.0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ava_bac">Questionários AVA (0-10)</label>
+                        <input type="number" id="ava_bac" name="ava_bac" min="0" max="10" step="0.1" value="0.0" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="button-container">
+                <button type="submit">🧮 Calcular Média Final</button>
+            </div>
+        </form>
+
+        <div id="resultado"></div>
+    </div>
+
+    <script>
+        // --- FUNÇÕES DE LÓGICA E CÁLCULO (JAVASCRIPT) ---
+
+        // Elementos do formulário
+        const tipoCursoSelect = document.getElementById('tipo_curso');
+        const notasTecnologoDiv = document.getElementById('notas_tecnologo');
+        const notasBachareladoDiv = document.getElementById('notas_bacharelado');
+        const form = document.getElementById('calculadoraForm');
+        const resultadoDiv = document.getElementById('resultado');
+
+        // Função para alternar a visibilidade dos campos de nota
+        function toggleNotaFields() {
+            if (tipoCursoSelect.value === 'Tecnólogo') {
+                notasTecnologoDiv.classList.remove('hidden');
+                notasBachareladoDiv.classList.add('hidden');
+            } else {
+                notasTecnologoDiv.classList.add('hidden');
+                notasBachareladoDiv.classList.remove('hidden');
+            }
+        }
+
+        // Adiciona um "ouvinte" para o evento de mudança no seletor de curso
+        tipoCursoSelect.addEventListener('change', toggleNotaFields);
+        
+        // Exibe os campos corretos assim que a página carrega
+        toggleNotaFields();
+
+        // Adiciona um "ouvinte" para o evento de envio do formulário
+        form.addEventListener('submit', function(event) {
+            // Previne o comportamento padrão do formulário (que recarregaria a página)
+            event.preventDefault(); 
+            
+            const tipoCurso = tipoCursoSelect.value;
+            const periodoIngresso = document.querySelector('input[name="periodo_ingresso"]:checked').value;
+            resultadoDiv.innerHTML = ''; // Limpa qualquer resultado anterior
+
+            let notaFinal = 0;
+            let notasValidas = true;
+
+            // --- FUNÇÕES DE CÁLCULO (portadas do Python) ---
+            const calcularNotaTecnologo = (prova, pim, ava) => (7 * prova + 2 * pim + 1 * ava) / 10;
+            const calcularNotaBacharelado = (prova, ava) => (9 * prova + 1 * ava) / 10;
+
+            // --- VALIDAÇÃO DAS NOTAS ---
+            function validarNota(nota, nomeAvaliacao) {
+                if (isNaN(nota) || nota < 0 || nota > 10) {
+                    resultadoDiv.innerHTML = `<div class="result error"><p>❌ Erro: A nota de '${nomeAvaliacao}' deve estar entre 0 e 10!</p></div>`;
+                    return false;
+                }
+                return true;
+            }
+
+            // Coleta e calcula as notas com base no tipo de curso
+            if (tipoCurso === 'Tecnólogo') {
+                const notaProva = parseFloat(document.getElementById('prova_tec').value);
+                const notaPim = parseFloat(document.getElementById('pim_tec').value);
+                const notaAva = parseFloat(document.getElementById('ava_tec').value);
+
+                if (!validarNota(notaProva, "Prova") || !validarNota(notaPim, "PIM") || !validarNota(notaAva, "AVA")) {
+                    notasValidas = false;
+                } else {
+                    notaFinal = calcularNotaTecnologo(notaProva, notaPim, notaAva);
+                }
+            } else { // Bacharelado / Licenciatura
+                const notaProva = parseFloat(document.getElementById('prova_bac').value);
+                const notaAva = parseFloat(document.getElementById('ava_bac').value);
+
+                if (!validarNota(notaProva, "Prova Presencial") || !validarNota(notaAva, "Questionários AVA")) {
+                    notasValidas = false;
+                } else {
+                    notaFinal = calcularNotaBacharelado(notaProva, notaAva);
+                }
+            }
+            
+            // Se todas as notas forem válidas, exibe o resultado
+            if (notasValidas) {
+                exibirResultado(notaFinal.toFixed(2), tipoCurso, periodoIngresso);
+            }
+        });
+
+        // Função para construir e exibir o HTML do resultado final
+        function exibirResultado(notaFinal, tipoCurso, periodoIngresso) {
+            let htmlResultado = '';
+            
+            if (tipoCurso === 'Tecnólogo') {
+                if (periodoIngresso === 'Até 2022') {
+                    const media = 5.7;
+                    if (notaFinal >= media) {
+                        htmlResultado = `
+                            <div class="result success">
+                                <h2>🎉 Nota Final: ${notaFinal}</h2>
+                                <p><strong>✅ APROVADO!</strong></p>
+                                <p>Parabéns! Você atingiu a média de aprovação (${media.toFixed(1)}).</p>
+                            </div>`;
+                    } else {
+                        htmlResultado = `
+                            <div class="result error">
+                                <h2>📉 Nota Final: ${notaFinal}</h2>
+                                <p><strong>❌ REPROVADO! VOCÊ IRÁ PARA O EXAME!</strong></p>
+                                <p>Sua nota foi inferior à média de aprovação (${media.toFixed(1)}).</p>
+                            </div>`;
+                    }
+                } else { // A partir de 2023
+                    if (notaFinal >= 6.7) {
+                        htmlResultado = `
+                            <div class="result success">
+                                <h2>🎉 Nota Final: ${notaFinal}</h2>
+                                <p><strong>✅ APROVADO!</strong></p>
+                                <p>Parabéns! Você atingiu a média de aprovação (6.7).</p>
+                            </div>`;
+                    } else if (notaFinal >= 5.0) {
+                        htmlResultado = `
+                            <div class="result warning">
+                                <h2>⚠️ Nota Final: ${notaFinal}</h2>
+                                <p><strong>📝 VOCÊ IRÁ PARA O EXAME!</strong></p>
+                                <p>Sua nota permite que você realize o exame final.</p>
+                            </div>`;
+                    } else {
+                        htmlResultado = `
+                            <div class="result error">
+                                <h2>📉 Nota Final: ${notaFinal}</h2>
+                                <p><strong>❌ REPROVADO DIRETAMENTE!</strong></p>
+                                <p>Sua nota não atingiu o mínimo para ir ao exame (5.0).</p>
+                            </div>`;
+                    }
+                }
+            } else { // Bacharelado / Licenciatura
+                if (periodoIngresso === 'Até 2022') {
+                    const media = 5.7;
+                    if (notaFinal >= media) {
+                        htmlResultado = `
+                            <div class="result success">
+                                <h2>🎉 Nota Final: ${notaFinal}</h2>
+                                <p><strong>✅ APROVADO!</strong></p>
+                                <p>Parabéns! Você atingiu a média de aprovação (${media.toFixed(1)}).</p>
+                            </div>`;
+                    } else {
+                        htmlResultado = `
+                            <div class="result warning">
+                                <h2>⚠️ Nota Final: ${notaFinal}</h2>
+                                <p><strong>📝 VOCÊ IRÁ PARA O EXAME!</strong></p>
+                                <p>Sua nota foi inferior a ${media.toFixed(1)}. Você precisará fazer o exame.</p>
+                            </div>`;
+                    }
+                } else { // A partir de 2023
+                    const media = 6.7;
+                     if (notaFinal >= media) {
+                        htmlResultado = `
+                            <div class="result success">
+                                <h2>🎉 Nota Final: ${notaFinal}</h2>
+                                <p><strong>✅ APROVADO!</strong></p>
+                                <p>Parabéns! Você atingiu a média de aprovação (${media.toFixed(1)}).</p>
+                            </div>`;
+                    } else {
+                        htmlResultado = `
+                            <div class="result error">
+                                <h2>📉 Nota Final: ${notaFinal}</h2>
+                                <p><strong>❌ REPROVADO! VOCÊ IRÁ PARA O EXAME!</strong></p>
+                                <p>Sua nota foi inferior à média de aprovação (${media.toFixed(1)}).</p>
+                            </div>`;
+                    }
+                }
+            }
+            resultadoDiv.innerHTML = htmlResultado;
+        }
+
+    </script>
+
+</body>
+</html>
